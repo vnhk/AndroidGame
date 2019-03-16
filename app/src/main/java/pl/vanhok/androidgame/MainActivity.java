@@ -11,11 +11,13 @@ import android.view.WindowManager;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import javax.security.auth.login.LoginException;
+
 public class MainActivity extends Activity {
     private Server server;
     private Client client;
-    private final int PORT = 4990;
-    private final String HOST = "localhost";
+    private final int PORT = 8999;
+    private final String HOST = "10.0.2.2";
 
 
     @Override
@@ -46,6 +48,7 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                client = new Client(PORT,HOST);
+               client.connect();
                 if(!client.isOn()) {
                     server = new Server(PORT);
                 }
@@ -64,5 +67,6 @@ public class MainActivity extends Activity {
     void serverOperation(){
         Log.i("SERVER", "serverOperation: server start");
         server.accept();
+        Log.i("SERVER","acceptep");
     }
 }

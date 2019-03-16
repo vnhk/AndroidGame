@@ -21,11 +21,11 @@ public class Client implements ServerClient{
 
     public boolean connect() {
         try{
-            s = new Socket("localhost",PORT);
+            s = new Socket(host,PORT);
             on = true;
         }catch (IOException e){
             Log.i(logString, "connect: "+e.getMessage());
-            close();
+            //close();
             return false;
         }
         return true;
