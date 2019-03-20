@@ -16,8 +16,8 @@ import javax.security.auth.login.LoginException;
 public class MainActivity extends Activity {
     private Server server;
     private Client client;
-    private final int PORT = 8999;
-    private final String HOST = "10.0.2.2";
+    private final int PORT = 8080;
+    private final String HOST = "10.0.2.15";
 
 
     @Override
