@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">StickWarApp</string>
+    <string name="rButton1">Server</string>
+    <string name="rButton2">Client</string>
+</resources>
