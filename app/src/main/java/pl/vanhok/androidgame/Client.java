@@ -10,13 +10,20 @@ public class Client implements ServerClient{
     private boolean on = false;
     private Socket s;
     private PrintWriter pw;
-    private int PORT;
-    private String host;
+    private static Client instance = null;
+    public static int PORT = 8080;
+    public static String host = "localhost";
     private final String logString = "CLIENT";
 
-    public Client(int PORT, String host){
-        this.PORT = PORT;
-        this.host = host;
+    public static Client getInstance(){
+        if(instance == null){
+            instance = new Client();
+        }
+        return instance;
+    }
+
+    private Client(){
+
     }
 
     public boolean connect() {
