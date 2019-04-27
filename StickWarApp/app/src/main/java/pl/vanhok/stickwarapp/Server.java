@@ -12,7 +12,6 @@ import java.util.Enumeration;
 public final class Server extends ServerClient {
 
     private static Server instance = null;
-    private boolean on = false;
     private ServerSocket ss;
 
     public static Server getInstance(){
@@ -26,7 +25,6 @@ public final class Server extends ServerClient {
         logString = "Server";
         try {
             ss = new ServerSocket(PORT);
-            on = true;
             Log.i(logString, "Server: IP: "+getIpAddress());
         }catch (IOException e) {
             Log.i(logString, "Constructor: " + e.getMessage());
@@ -34,13 +32,14 @@ public final class Server extends ServerClient {
         }
     }
 
-    public void accept() {
+    public int accept() {
         try {
             socket = ss.accept();
             Log.i(logString, "Client connected");
         }catch (IOException e){
             Log.i(logString, "accept: "+ e.getMessage());
         }
+        return 1;
     }
 
     public String getIpAddress() {

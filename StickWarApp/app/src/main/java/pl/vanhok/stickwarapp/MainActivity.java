@@ -24,9 +24,12 @@ public class MainActivity extends AppCompatActivity {
     private RadioButton r1,r2;
     private final int SERVER = 1;
     private final int CLIENT = 0;
+    int xd = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -38,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         r1 = findViewById(R.id.radioButton);
         r2 = findViewById(R.id.radioButton2);
         tv = findViewById(R.id.textViewInfo);
-        tv.setText("....");
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,10 +78,13 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     server = Server.getInstance();
                 }
-                if(client!=null&&client.isOn())
+                if(client!=null&&client.isOn()) {
                     clientOperation();
-                if(server!=null&&server.isOn())
+                    return;
+                }
+                if(server!=null) {
                     serverOperation();
+                }
             }
         });
         t.start();
@@ -109,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         });
         Log.i("SERVER","accepted");
 
-        Intent i = new Intent(MainActivity.this,GameMainActivity.class);
+        Intent i = new Intent(getApplicationContext(),GameMainActivity.class);
         i.putExtra("SERVERCLIENT","SERVER");
         startActivity(i);
 

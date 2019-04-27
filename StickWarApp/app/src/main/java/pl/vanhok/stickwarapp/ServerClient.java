@@ -14,7 +14,7 @@ public abstract class ServerClient {
     protected String logString;
     protected Socket socket;
     protected boolean on = false;
-    protected final int PORT = 8080;
+    protected final int PORT = 10080;
     PrintWriter pw;
     BufferedReader br;
     InputStreamReader in;
@@ -33,16 +33,15 @@ public abstract class ServerClient {
         }
     }
 
-    public void receive(){
-        while(on){
+    public String receive(){
             try{
                 response = br.readLine();
                 if(response != null)
-                    Log.i(logString, "receive: "+response);
+                    return response;
             }catch (Exception e){
                 Log.i(logString, "communication: "+e.getMessage());
             }
-        }
+        return "";
     }
 
     public void send(String message){
