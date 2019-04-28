@@ -13,9 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".GameMainActivity">
+        <activity android:name=".Game.GameMainActivity">
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".Menu.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

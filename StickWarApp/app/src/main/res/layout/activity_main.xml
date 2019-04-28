@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Menu.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="number|text" />
+            android:inputType="text" />
 
         <TextView
             android:id="@+id/textViewInfo"
