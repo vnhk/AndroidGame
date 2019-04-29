@@ -3,6 +3,10 @@ package pl.vanhok.stickwarapp.Game;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+enum TypeOfPlayer{
+    PLAYER_ONE,PLAYER_TWO
+}
+
 public abstract class Player {
 
     protected Paint color;
@@ -11,6 +15,7 @@ public abstract class Player {
     protected double size;
     protected Bullet bullet = null;
     protected int points = 0;
+    protected int typeOfPlayer;
 
     public Bullet getBullet() {
         return bullet;
@@ -20,7 +25,8 @@ public abstract class Player {
         this.bullet = bullet;
     }
 
-    Player() {
+    Player(int typeOfPlayer) {
+        this.typeOfPlayer = typeOfPlayer;
         color = new Paint();
     }
 
@@ -33,7 +39,18 @@ public abstract class Player {
     }
 
     public void initBullet() {
-        bullet = new Bullet(posx, posy, speed, size);
+        if(typeOfPlayer==TypeOfPlayer.PLAYER_ONE.ordinal()){
+            if(speed<0)
+                bullet = new Bullet(posx, posy, speed, size);
+            else
+                bullet = new Bullet(posx, posy, -speed, size);
+        }
+        else if(typeOfPlayer==TypeOfPlayer.PLAYER_TWO.ordinal()){
+            if(speed<0)
+                bullet = new Bullet(posx, posy, -speed, size);
+            else
+                bullet = new Bullet(posx, posy, speed, size);
+        }
     }
 
 
@@ -81,12 +98,14 @@ public abstract class Player {
 
 class PlayerOne extends Player {
     PlayerOne() {
+        super(TypeOfPlayer.PLAYER_ONE.ordinal());
         color.setColor(Color.BLACK);
     }
 }
 
 class PlayerTwo extends Player {
     PlayerTwo() {
+        super(TypeOfPlayer.PLAYER_TWO.ordinal());
         color.setColor(Color.RED);
     }
 }

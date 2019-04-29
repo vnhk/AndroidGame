@@ -9,12 +9,10 @@ import pl.vanhok.stickwarapp.ServerClient.Client;
 import pl.vanhok.stickwarapp.ServerClient.Server;
 
 
-
-
 public final class GameSimulation {
     private PlayerOne playerOne;
     private PlayerTwo playerTwo;
-    private String direction;
+    private String direction = "left", directionEnemy = "left";
     private final float surfaceWidth, surfaceHeight;
     private Server server;
     private Client client;
@@ -24,15 +22,15 @@ public final class GameSimulation {
     private final double speedRatio = 0.02;
     private final double ratio = 0.1;
     private boolean running = true;
-    private boolean shot;
-    private String enemyPoints,enemyPosition,enemyBulletY;
+    private String bullet = "null";
+    private String enemyPoints, enemyPosition, enemyBullet = "null";
 
-    public boolean isShot() {
-        return shot;
+    public String getBullet() {
+        return bullet;
     }
 
-    public void setShot(boolean shot) {
-        this.shot = shot;
+    public void setBullet(String bullet) {
+        this.bullet = bullet;
     }
 
     public void setDirection(String direction) {
@@ -40,9 +38,10 @@ public final class GameSimulation {
     }
 
 
-    public void setRunning(boolean running){
+    public void setRunning(boolean running) {
         this.running = running;
     }
+
     private void receiveMessage() {
         if (server != null) {
             message = server.receive();
@@ -54,20 +53,20 @@ public final class GameSimulation {
         try {
             enemyPoints = messages[ReceivedMessage.POINTS.ordinal()];
             enemyPosition = messages[ReceivedMessage.POSITION.ordinal()];
-            enemyBulletY = messages[ReceivedMessage.BULLET.ordinal()];
-        }catch (IndexOutOfBoundsException iuoe){
+            enemyBullet = messages[ReceivedMessage.BULLET.ordinal()];
+        } catch (IndexOutOfBoundsException iuoe) {
         }
     }
 
     private void changePosition() {
 
-        if(message.equals("")&&running) {
+        if (message.equals("") && running) {
             setRunning(false);
             return;
         }
 
         if (!enemyPosition.equals(""))
-            playerTwo.setPosx(Float.parseFloat(enemyPosition)*surfaceWidth);
+            directionEnemy = enemyPosition;
     }
 
     private void changePoints() {
@@ -75,26 +74,11 @@ public final class GameSimulation {
             playerTwo.setPoints(Integer.parseInt(enemyPoints));
     }
 
-    private void setEnemyBullet() {
-        if(playerTwo.getBullet()==null)
-            playerTwo.initBullet();
-        if (!enemyBulletY.equals("null")) {
-            playerTwo.getBullet().setPosy(surfaceHeight-Float.parseFloat(enemyBulletY)*surfaceHeight);
-        }
-        else {
-            playerTwo.setBullet(null);
-        }
-    }
 
     private void sendMessage() {
-       String str = "";
-       if(playerOne.getBullet()!=null) {
-           str += playerOne.getPosx() / surfaceWidth + "," + playerOne.getPoints() + "," + playerOne.getBullet().getPosy()/surfaceHeight;
-       }
-       else{
-           str += playerOne.getPosx() / surfaceWidth + "," + playerOne.getPoints() + "," + "null";
-       }
-       if (server != null) {
+        String str = "";
+        str += direction + "," + playerOne.getPoints() + "," + bullet;
+        if (server != null) {
             server.send(str);
         } else if (client != null) {
             client.send(str);
@@ -112,16 +96,15 @@ public final class GameSimulation {
         playerOne = new PlayerOne();
         playerTwo = new PlayerTwo();
 
-        playerOne.setPosx(ratio*width);
-        playerOne.setPosy((1-ratio)*height);
-        playerOne.setSize(ratio*width);
-        playerOne.setSpeed(speedRatio*width);
+        playerOne.setPosx(ratio * width);
+        playerOne.setPosy((1 - ratio) * height);
+        playerOne.setSize(ratio * width);
+        playerOne.setSpeed(speedRatio * width);
 
-        playerTwo.setPosx(ratio*width);
-        playerTwo.setPosy((ratio)*height);
-        playerTwo.setSize(ratio*width);
-        playerTwo.setSpeed(speedRatio*width);
-
+        playerTwo.setPosx(ratio * width);
+        playerTwo.setPosy((ratio) * height);
+        playerTwo.setSize(ratio * width);
+        playerTwo.setSpeed(speedRatio * width);
 
 
         if (x.equals("SERVER")) {
@@ -150,81 +133,100 @@ public final class GameSimulation {
                     receiveMessage();
                     changePosition();
                     changePoints();
-                    setEnemyBullet();
                 }
             }
         });
-    operationThread.start();
+        operationThread.start();
     }
 
-    private void colisionOperation(Bullet bullet){
-        if(bullet.getPosx()+bullet.getSize()/2>=playerTwo.getPosx()
-                &&bullet.getPosx()+bullet.getSize()/2<=playerTwo.getPosx()+playerTwo.getSize()/2
-                )
-            playerOne.setPoints(playerOne.getPoints()+1);
+    private void colisionOperation(Bullet bullet) {
+        if (bullet.getPosx() + bullet.getSize() / 2 >= playerTwo.getPosx()
+                && bullet.getPosx() + bullet.getSize() / 2 <= playerTwo.getPosx() + playerTwo.getSize() / 2
+        )
+            playerOne.setPoints(playerOne.getPoints() + 1);
     }
 
-    void control() {
-        if(shot){
-            if(playerOne.getBullet()==null)
-                playerOne.initBullet();
-            shot = false;
-        }
+    private void playerPositionControl(Player player, String directionL) {
+        double posx = player.getPosx();
+        double speed = player.getSpeed();
 
-        if(playerOne.getBullet()!=null){
-            playerOne.getBullet().update();
-            if(playerOne.getBullet().getPosy()<50) {
-                colisionOperation(playerOne.getBullet());
-                playerOne.setBullet(null);
-            }
-        }
-
-        double posx = playerOne.getPosx();
-        double speed = playerOne.getSpeed();
-
-        if (direction.equals("left"))
+        if (directionL.equals("left"))
             if (speed > 0)
                 speed = -speed;
 
-        if (direction.equals("right"))
+        if (directionL.equals("right"))
             if (speed < 0)
                 speed = -speed;
 
-        playerOne.setSpeed(speed);
+        player.setSpeed(speed);
 
         posx += speed;
 
-        if (posx <= playerOne.getSize()) {
-            posx = playerOne.getSize();
+        if (posx <= player.getSize()) {
+            posx = player.getSize();
         }
-        if (posx >= surfaceWidth - (playerOne.getSize())){
-            posx = surfaceWidth - (playerOne.getSize());
+        if (posx >= surfaceWidth - (player.getSize())) {
+            posx = surfaceWidth - (player.getSize());
         }
 
-        playerOne.setPosx(posx);
+        player.setPosx(posx);
+    }
+
+
+    void playerBulletControl(Player player, String bulletDesc) {
+
+        if (bulletDesc.equals("true")) {
+            if (player.getBullet() == null) {
+                player.initBullet();
+            }
+        }
+
+        if (player.getBullet() != null) {
+            player.getBullet().update();
+            if (bulletDesc.equals("null")) {
+                player.setBullet(null);
+            }
+        }
+
+    }
+
+    void control() {
+        if (playerOne.getBullet() != null)
+            if (playerOne.getBullet().getPosy() < 50) {
+                colisionOperation(playerOne.getBullet());
+                playerOne.setBullet(null);
+                bullet = "null";
+            }
+        playerPositionControl(playerOne, direction);
+        playerPositionControl(playerTwo, directionEnemy);
+        playerBulletControl(playerTwo, enemyBullet);
+        playerBulletControl(playerOne, bullet);
+
     }
 
 
     void draw(Canvas c) {
-        int textColor = Color.rgb(0,0,0);
+        int textColor = Color.rgb(0, 0, 0);
 
         c.drawColor(Color.rgb(68, 95, 195));
 
-        if(playerOne.getBullet()!=null){
+
+        if (playerOne.getBullet() != null) {
             playerOne.getBullet().draw(c);
         }
-        if(playerTwo.getBullet()!=null){
+        if (playerTwo.getBullet() != null) {
             playerTwo.getBullet().draw(c);
         }
 
-        c.drawText(String.valueOf(playerOne.getPoints()),surfaceWidth/10,(float)(surfaceHeight/1.8),new Paint(textColor));
-        c.drawText(String.valueOf(playerTwo.getPoints()),surfaceWidth/10,(float)(surfaceHeight/2.2),new Paint(textColor));
-        c.drawCircle((float)playerOne.getPosx(),
-                (float)playerOne.getPosy(), (float)playerOne.getSize(), playerOne.getColor());
+        c.drawText(String.valueOf(playerOne.getPoints()), surfaceWidth / 10, (float) (surfaceHeight / 1.8), new Paint(textColor));
+        c.drawText(String.valueOf(playerTwo.getPoints()), surfaceWidth / 10, (float) (surfaceHeight / 2.2), new Paint(textColor));
+        c.drawCircle((float) playerOne.getPosx(),
+                (float) playerOne.getPosy(), (float) playerOne.getSize(), playerOne.getColor());
 
-        c.drawCircle((float)playerTwo.getPosx(),
-                (float)playerTwo.getPosy(), (float)playerTwo.getSize()
+        c.drawCircle((float) playerTwo.getPosx(),
+                (float) playerTwo.getPosy(), (float) playerTwo.getSize()
                 , playerTwo.getColor());
+
 
 
 

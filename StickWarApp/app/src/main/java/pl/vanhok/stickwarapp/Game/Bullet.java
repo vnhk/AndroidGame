@@ -11,8 +11,6 @@ public class Bullet {
     private double posy;
 
     public Bullet(double posx,double posy,double speed,double size){
-        if(speed>0)
-            speed = -speed;
         this.speed = 2*speed;
         this.posx = posx;
         this.posy = posy;

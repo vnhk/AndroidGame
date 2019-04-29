@@ -45,7 +45,7 @@ public class GameView extends SurfaceView {
                             game.setDirection("right");
                         }
                     } else {
-                        game.setShot(true);
+                        game.setBullet("true");
                     }
                 }
 
